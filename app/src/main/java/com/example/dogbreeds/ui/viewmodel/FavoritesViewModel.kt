@@ -1,8 +1,8 @@
-package com.example.dogbreeds.ui.viewmodel
+package com.example.dogbreeds.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dogbreeds.data.repository.BreedRepository
+import com.example.dogbreeds.data.BreedRepository
 import com.example.dogbreeds.domain.model.Breed
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

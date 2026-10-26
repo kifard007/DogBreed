@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -13,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.dogbreeds.domain.model.Breed
 import com.example.dogbreeds.ui.viewmodel.BreedListViewModel
-import com.example.dogbreeds.ui.viewmodel.FavoritesViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,8 +23,15 @@ fun BreedListScreen(
     onBreedClick: (Int) -> Unit,
     onFavoritesClick: () -> Unit
 ) {
+
+    println("DEBUG: BreedListScreen composed")   // ← ЭТА СТРОКА
     val breeds by viewModel.breeds.collectAsState()
     val query by viewModel.searchQuery.collectAsState()
+    println("DEBUG: breeds size = ${breeds.size}")   // ← И ЭТА
+    LaunchedEffect(Unit) {
+        println("DEBUG: LaunchedEffect fired, calling refresh()")
+        viewModel.refresh()
+    }
 
     Scaffold(
         topBar = {

@@ -1,8 +1,7 @@
-package com.example.dogbreeds.data.repository
+package com.example.dogbreeds.data
 
 import com.example.dogbreeds.data.local.BreedDao
 import com.example.dogbreeds.data.local.entity.BreedEntity
-import com.example.dogbreeds.data.remote.RemoteDataSource
 import com.example.dogbreeds.domain.model.Breed
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -21,20 +20,28 @@ class BreedRepository(
     }
 
     suspend fun refreshBreeds() {
-        val dtos = remote.fetchBreeds()
-        val entities = dtos.map { dto ->
+        val breedDataList = remote.fetchBreeds()
+        val entities = breedDataList.map { data ->
+            val attr = data.attributes
+            val hashId = data.id.hashCode()
             BreedEntity(
-                id = dto.id,
-                name = dto.name,
-                temperament = dto.temperament ?: "Unknown",
-                origin = dto.origin,
-                lifeSpan = dto.lifeSpan ?: "Unknown",
-                description = dto.description,
-                imageUrl = dto.image?.url ?: "",
-                isFavorite = dao.getById(dto.id)?.isFavorite ?: false
+                id = hashId,
+                name = attr.name,
+                temperament = attr.traits?.temperament?.joinToString(", ")
+                    ?: "Информация отсутствует",
+                origin = attr.origin?.country,
+                lifeSpan = buildLifeSpan(attr.life),
+                description = attr.description,
+                imageUrl = attr.images?.firstOrNull()?.medium ?: "",
+                isFavorite = dao.getById(hashId)?.isFavorite ?: false
             )
         }
         dao.insertAll(entities)
+    }
+
+    private fun buildLifeSpan(life: LifeSpan?): String {
+        if (life?.min == null || life.max == null) return "Неизвестно"
+        return "${life.min} - ${life.max} лет"
     }
 
     suspend fun toggleFavorite(breed: Breed) {

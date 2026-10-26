@@ -16,16 +16,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.example.dogbreeds.di.AppDependencies
 import com.example.dogbreeds.navigation.*
 import com.example.dogbreeds.ui.*
 import com.example.dogbreeds.ui.viewmodel.BreedListViewModel
-import com.example.dogbreeds.ui.viewmodel.FavoritesViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println("DEBUG: onCreate started")
         AppDependencies.init(applicationContext)
+        println("DEBUG: AppDependencies initialized")
         setContent {
             Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
                 MainScreen(modifier = Modifier.padding(padding))

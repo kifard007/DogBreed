@@ -2,7 +2,7 @@ package com.example.dogbreeds.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dogbreeds.data.repository.BreedRepository
+import com.example.dogbreeds.data.BreedRepository
 import com.example.dogbreeds.domain.model.Breed
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,12 +41,16 @@ class BreedListViewModel(private val repository: BreedRepository) : ViewModel() 
     }
 
     fun refresh() {
+        println("DEBUG: refresh() called")
         viewModelScope.launch {
+            println("DEBUG: refresh coroutine started")
             _isRefreshing.value = true
             try {
                 repository.refreshBreeds()
+                println("DEBUG: refresh SUCCESS")
             } catch (e: Exception) {
-                _errorEvents.emit("Ошибка загрузки: ${e.message}")
+                println("DEBUG: refresh FAILED: ${e.message}")
+                e.printStackTrace()
             } finally {
                 _isRefreshing.value = false
             }
