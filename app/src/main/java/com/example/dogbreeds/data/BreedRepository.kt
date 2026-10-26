@@ -20,28 +20,26 @@ class BreedRepository(
     }
 
     suspend fun refreshBreeds() {
-        val breedDataList = remote.fetchBreeds()
-        val entities = breedDataList.map { data ->
-            val attr = data.attributes
-            val hashId = data.id.hashCode()
+        // Получаем список имён пород (например: "akita", "beagle")
+        val breedNames = remote.fetchBreeds()
+
+        // Превращаем каждое имя в BreedEntity для Room
+        val entities = breedNames.map { name ->
+            val hashId = name.hashCode()
             BreedEntity(
                 id = hashId,
-                name = attr.name,
-                temperament = attr.traits?.temperament?.joinToString(", ")
-                    ?: "Информация отсутствует",
-                origin = attr.origin?.country,
-                lifeSpan = buildLifeSpan(attr.life),
-                description = attr.description,
-                imageUrl = attr.images?.firstOrNull()?.medium ?: "",
+                name = name.replaceFirstChar { it.uppercase() },
+                temperament = "Информация отсутствует",
+                origin = null,
+                lifeSpan = "Неизвестно",
+                description = null,
+                // Dog CEO отдаёт случайную картинку по имени породы
+                imageUrl = "https://dog.ceo/api/breed/$name/images/random",
                 isFavorite = dao.getById(hashId)?.isFavorite ?: false
             )
         }
-        dao.insertAll(entities)
-    }
 
-    private fun buildLifeSpan(life: LifeSpan?): String {
-        if (life?.min == null || life.max == null) return "Неизвестно"
-        return "${life.min} - ${life.max} лет"
+        dao.insertAll(entities)
     }
 
     suspend fun toggleFavorite(breed: Breed) {
